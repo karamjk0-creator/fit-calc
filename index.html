@@ -194,6 +194,450 @@
       font-weight: bold;
       color: var(--text-main);
     }
+
+    /* Footer & Static Pages Styles */
+    .static-page h2 {
+      color: var(--accent-color);
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+    }
+
+    .static-page p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .footer-nav {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .footer-link:hover {
+      color: var(--accent-color);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>منصة الصحة واللياقة الشاملة</h1>
+      <p>أدوات وحاسبات تفاعلية دقيقة لصحتك ولياقتك</p>
+    </div>
+
+    <!-- قائمة التنقل بين الأقسام الرئيسية -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('calories')">السعرات والماكروز</button>
+      <button class="tab-btn" onclick="switchTab('fat')">نسبة الدهون</button>
+      <button class="tab-btn" onclick="switchTab('water')">احتياج الماء</button>
+      <button class="tab-btn" onclick="switchTab('ideal-weight')">الوزن المثالي</button>
+    </div>
+
+    <!-- 1. حاسبة السعرات والماكروز -->
+    <div id="calories" class="tab-content active">
+      <div class="form-group">
+        <label>الجنس</label>
+        <div class="gender-selector">
+          <div class="gender-btn active" onclick="setGender(this, 'male')">ذكر</div>
+          <div class="gender-btn" onclick="setGender(this, 'female')">أنثى</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cal-age">العمر (سنة)</label>
+        <input type="number" id="cal-age" placeholder="مثال: 23">
+      </div>
+
+      <div class="form-group">
+        <label for="cal-weight">الوزن (كجم)</label>
+        <input type="number" id="cal-weight" placeholder="مثال: 75">
+      </div>
+
+      <div class="form-group">
+        <label for="cal-height">الطول (سم)</label>
+        <input type="number" id="cal-height" placeholder="مثال: 178">
+      </div>
+
+      <div class="form-group">
+        <label for="cal-activity">مستوى النشاط البدني</label>
+        <select id="cal-activity">
+          <option value="1.2">خامل (بدون تمارين / عمل مكتبي)</option>
+          <option value="1.375">نشاط خفيف (تمارين 1-3 أيام/أسبوع)</option>
+          <option value="1.55">نشاط متوسط (تمارين 3-5 أيام/أسبوع)</option>
+          <option value="1.725">نشاط عالٍ (تمارين 6-7 أيام/أسبوع)</option>
+        </select>
+      </div>
+
+      <button class="btn-submit" onclick="calculateCalories()">احسب السعرات</button>
+
+      <div id="cal-result" class="result-box">
+        <h3>نتائج السعرات اليومية:</h3>
+        <div class="result-item"><span>معدل الأيض الأساسي (BMR):</span><span id="bmr-val">-</span></div>
+        <div class="result-item"><span>سعرات المحافظة على الوزن:</span><span id="tdee-val">-</span></div>
+        <div class="result-item"><span>سعرات إنقاص الوزن:</span><span id="loss-val">-</span></div>
+        <div class="result-item"><span>سعرات زيادة الوزن:</span><span id="gain-val">-</span></div>
+      </div>
+    </div>
+
+    <!-- 2. حاسبة نسبة الدهون -->
+    <div id="fat" class="tab-content">
+      <div class="form-group">
+        <label for="fat-weight">الوزن (كجم)</label>
+        <input type="number" id="fat-weight" placeholder="مثال: 75">
+      </div>
+      <div class="form-group">
+        <label for="fat-waist">محيط الخصر (سم)</label>
+        <input type="number" id="fat-waist" placeholder="مثال: 80">
+      </div>
+      <button class="btn-submit" onclick="calculateFat()">احسب نسبة الدهون</button>
+
+      <div id="fat-result" class="result-box">
+        <h3>النتيجة التقريبية:</h3>
+        <div class="result-item"><span>نسبة الدهون المقدرة:</span><span id="fat-val">-</span></div>
+      </div>
+    </div>
+
+    <!-- 3. حاسبة احتياج الماء -->
+    <div id="water" class="tab-content">
+      <div class="form-group">
+        <label for="water-weight">الوزن (كجم)</label>
+        <input type="number" id="water-weight" placeholder="مثال: 75">
+      </div>
+      <button class="btn-submit" onclick="calculateWater()">احسب احتياج الماء</button>
+
+      <div id="water-result" class="result-box">
+        <h3>الاحتياج اليومي من الماء:</h3>
+        <div class="result-item"><span>الكمية المطلوبة:</span><span id="water-val">-</span></div>
+      </div>
+    </div>
+
+    <!-- 4. حاسبة الوزن المثالي -->
+    <div id="ideal-weight" class="tab-content">
+      <div class="form-group">
+        <label for="ideal-height">الطول (سم)</label>
+        <input type="number" id="ideal-height" placeholder="مثال: 178">
+      </div>
+      <button class="btn-submit" onclick="calculateIdealWeight()">احسب الوزن المثالي</button>
+
+      <div id="ideal-result" class="result-box">
+        <h3>الوزن المثالي المتوقع:</h3>
+        <div class="result-item"><span>النطاق المثالي:</span><span id="ideal-val">-</span></div>
+      </div>
+    </div>
+
+    <!-- 5. صفحة من نحن (About Us) -->
+    <div id="about" class="tab-content static-page">
+      <h2>من نحن</h2>
+      <p>منصة الصحة واللياقة الشاملة هي موقع إلكتروني مجاني يهدف إلى مساعدة الأفراد على تتبع صحتهم، حساب سعراتهم الحرارية بدقة، ومعرفة احتياجات أجسامهم من العناصر الغذائية والماء.</p>
+      <p>نؤمن بأن الوعي الصحي يجب أن يكون متاحاً وسهلاً للجميع بدون تعقيد، ولذلك صممنا هذه الأدوات لتكون سريعة، دقيقة، ومجانية تماماً.</p>
+    </div>
+
+    <!-- 6. صفحة سياسة الخصوصية (Privacy Policy) -->
+    <div id="privacy" class="tab-content static-page">
+      <h2>سياسة الخصوصية</h2>
+      <p>في منصة الصحة واللياقة الشاملة، نعتبر خصوصية زوارنا أولوية قصوى. توضح وثيقة سياسة الخصوصية هذه أنواع معلومات البيانات التي يتم جمعها وكيفية استخدامها.</p>
+      <p><strong>ملفات تعريف الارتباط (Cookies):</strong> نحن نستعين بشركات إعلانية كطرف ثالث (مثل Google AdSense) لعرض الإعلانات عندما تزور موقعنا. يحق لهذه الشركات استخدام معلومات حول زياراتك لهذا الموقع (باستثناء الاسم أو العنوان أو عنوان البريد الإلكتروني أو رقم الهاتف) لتقديم إعلانات حول السلع والخدمات التي تهمك.</p>
+    </div>
+
+    <!-- 7. صفحة اتصل بنا (Contact Us) -->
+    <div id="contact" class="tab-content static-page">
+      <h2>اتصل بنا</h2>
+      <p>نسعد دائماً بتواصلكم معنا، سواء للاستفسار عن الأدوات، اقتراح حاسبات جديدة، أو لأي ملاحظات أخرى.</p>
+      <p>يمكنكم التواصل معنا مباشرة عبر البريد الإلكتروني للدمج والدعم الفني:</p>
+      <p style="color: var(--accent-color); font-weight: bold;">support@health-calc.com</p>
+    </div>
+
+    <!-- روابط الفوتر (Footer) المطلوبة لـ AdSense -->
+    <div class="footer-nav">
+      <button class="footer-link" onclick="switchTab('about')">من نحن</button>
+      <button class="footer-link" onclick="switchTab('privacy')">سياسة الخصوصية</button>
+      <button class="footer-link" onclick="switchTab('contact')">اتصل بنا</button>
+    </div>
+
+  </div>
+
+  <script>
+    let selectedGender = 'male';
+
+    // كود التبديل بين الأقسام والقوائم
+    function switchTab(tabId) {
+      // إخفاء كافة الأقسام
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(content => content.classList.remove('active'));
+
+      // إلغاء تفعيل كافة الأزرار الرئيسية إذا كان القسم منها
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => {
+        if(btn.getAttribute('onclick').includes(tabId)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // إظهار القسم المختار
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function setGender(element, gender) {
+      const parent = element.parentElement;
+      const btns = parent.querySelectorAll('.gender-btn');
+      btns.forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+      selectedGender = gender;
+    }
+
+    // حساب السعرات
+    function calculateCalories() {
+      const age = parseFloat(document.getElementById('cal-age').value);
+      const weight = parseFloat(document.getElementById('cal-weight').value);
+      const height = parseFloat(document.getElementById('cal-height').value);
+      const activity = parseFloat(document.getElementById('cal-activity').value);
+
+      if (!age || !weight || !height) {
+        alert('يرجى ملء جميع الحقول بشكل صحيح');
+        return;
+      }
+
+      let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+      bmr = selectedGender === 'male' ? bmr + 5 : bmr - 161;
+
+      const tdee = bmr * activity;
+
+      document.getElementById('bmr-val').innerText = Math.round(bmr) + ' سعرة حرارية';
+      document.getElementById('tdee-val').innerText = Math.round(tdee) + ' سعرة حرارية';
+      document.getElementById('loss-val').innerText = Math.round(tdee - 500) + ' سعرة حرارية';
+      document.getElementById('gain-val').innerText = Math.round(tdee + 400) + ' سعرة حرارية';
+
+      document.getElementById('cal-result').style.display = 'block';
+    }
+
+    // حساب نسبة الدهون
+    function calculateFat() {
+      const weight = parseFloat(document.getElementById('fat-weight').value);
+      const waist = parseFloat(document.getElementById('fat-waist').value);
+
+      if (!weight || !waist) {
+        alert('يرجى إدخال البيانات المطلوبة');
+        return;
+      }
+
+      const fatPercentage = ((waist * 0.74) - (weight * 0.082) - 34.89) / weight * 100;
+      const finalFat = Math.max(5, Math.min(50, fatPercentage)).toFixed(1);
+
+      document.getElementById('fat-val').innerText = finalFat + '%';
+      document.getElementById('fat-result').style.display = 'block';
+    }
+
+    // حساب الماء
+    function calculateWater() {
+      const weight = parseFloat(document.getElementById('water-weight').value);
+
+      if (!weight) {
+        alert('يرجى إدخال الوزن');
+        return;
+      }
+
+      const waterLiters = (weight * 0.035).toFixed(1);
+      document.getElementById('water-val').innerText = waterLiters + ' لتر يومياً (' + Math.round(waterLiters * 4) + ' أكواب)';
+      document.getElementById('water-result').style.display = 'block';
+    }
+
+    // حساب الوزن المثالي
+    function calculateIdealWeight() {
+      const height = parseFloat(document.getElementById('ideal-height').value);
+
+      if (!height) {
+        alert('يرجى إدخال الطول');
+        return;
+      }
+
+      const minWeight = (18.5 * Math.pow(height / 100, 2)).toFixed(1);
+      const maxWeight = (24.9 * Math.pow(height / 100, 2)).toFixed(1);
+
+      document.getElementById('ideal-val').innerText = minWeight + ' - ' + maxWeight + ' كجم';
+      document.getElementById('ideal-result').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
+      width: 100%;
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      border: 1px solid var(--border-color);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      color: var(--accent-color);
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Tabs Navigation */
+    .tabs-nav {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 480px) {
+      .tabs-nav {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .tab-btn {
+      background-color: var(--bg-color);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 12px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background-color: var(--accent-color);
+      color: #fff;
+      border-color: var(--accent-color);
+    }
+
+    /* Tab Content Forms */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-color);
+    }
+
+    .gender-selector {
+      display: flex;
+      gap: 10px;
+    }
+
+    .gender-btn {
+      flex: 1;
+      padding: 10px;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .gender-btn.active {
+      background-color: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* Result Box */
+    .result-box {
+      margin-top: 20px;
+      padding: 16px;
+      background-color: var(--bg-color);
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      display: none;
+    }
+
+    .result-box h3 {
+      color: var(--accent-color);
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .result-item span:last-child {
+      font-weight: bold;
+      color: var(--text-main);
+    }
   </style>
 </head>
 <body>
